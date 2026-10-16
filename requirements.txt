@@ -1,1 +1,1 @@
-# This application uses only Python's standard library.
+tkinterdnd2>=0.4.2

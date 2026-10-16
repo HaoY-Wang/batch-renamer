@@ -1,45 +1,27 @@
-# Batch Renamer
+# Quick Rename
 
-一个仅支持 Windows 的桌面批量文件重命名器。下载发布页中的 `.exe` 后即可使用，不需要安装 Python。
+一个仅支持 Windows 的轻量悬浮窗批量重命名器。把任何类型的文件直接拖进窗口，输入新名称，点击确认即可完成。文件始终保留在原本所在的文件夹中。
 
-## 功能
+## 使用方式
 
-- 选择文件夹，可选是否包含子文件夹
-- 按扩展名筛选文件，例如 `jpg,png,pdf`
-- 查找替换、添加前缀和后缀、追加编号
-- 执行前预览全部变更
-- 检查重复文件名、非法 Windows 文件名和已有文件冲突
-- 每次操作会在选定文件夹保存 `rename_log.csv`
+1. 从 [Releases](../../releases) 下载 `Quick-Rename-Windows.exe`。
+2. 按 `Ctrl + Alt + R` 呼出悬浮窗。
+3. 在上方输入新的文件名；无需输入扩展名。
+4. 将一个或多个文件拖放到区域，点击“确认修改”。
 
-## 使用
-
-1. 在 [Releases](../../releases) 下载 `Batch-Renamer-Windows.exe`。
-2. 打开程序并选择文件夹。
-3. 设置规则，点击“生成预览”。
-4. 检查状态列没有错误后，点击“执行重命名”。
-
-> 请先在一份副本上试用。程序不会处理文件内容，但重命名仍可能影响其他软件中的文件引用。
+单个文件会改为 `新名称.原扩展名`。批量拖入文件时，程序会自动编号，例如 `新名称_001.jpg`、`新名称_002.pdf`。
 
 ## 本地运行和打包
 
-需要 Windows 和 Python 3.11 或更新版本。
-
 ```powershell
+python -m pip install -r requirements.txt pyinstaller
 python src/main.py
-python -m pip install pyinstaller
-pyinstaller --noconfirm --onefile --windowed --name Batch-Renamer src/main.py
+pyinstaller --noconfirm --onefile --windowed --collect-all tkinterdnd2 --name Quick-Rename src/main.py
 ```
 
-生成的文件位于 `dist/Batch-Renamer.exe`。
-
-## 发布新版本
+## 发布
 
 推送形如 `v1.0.0` 的 Git 标签。GitHub Actions 会构建 Windows `.exe` 并创建对应的 Release。
-
-```powershell
-git tag v1.0.0
-git push origin v1.0.0
-```
 
 ## License
 

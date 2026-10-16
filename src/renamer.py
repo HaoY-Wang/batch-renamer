@@ -3,12 +3,10 @@
 from __future__ import annotations
 
 import csv
-import os
 import re
 import uuid
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable
 
 INVALID_WINDOWS_CHARS = re.compile(r'[<>:"/\\|?*\x00-\x1f]')
 RESERVED_NAMES = {
@@ -21,15 +19,6 @@ class RenameItem:
     source: Path
     target: Path
     error: str = ""
-
-
-def find_files(folder: Path, extensions: str, include_subfolders: bool) -> list[Path]:
-    wanted = {item.strip().lower().lstrip(".") for item in extensions.split(",") if item.strip()}
-    candidates: Iterable[Path] = folder.rglob("*") if include_subfolders else folder.glob("*")
-    return sorted(
-        (path for path in candidates if path.is_file() and (not wanted or path.suffix.lower().lstrip(".") in wanted)),
-        key=lambda path: str(path).lower(),
-    )
 
 
 def validate_filename(name: str) -> str:
@@ -47,16 +36,13 @@ def validate_filename(name: str) -> str:
     return ""
 
 
-def build_plan(
-    files: list[Path], find_text: str, replace_text: str, prefix: str, suffix: str, numbering: bool
-) -> list[RenameItem]:
+def build_drop_plan(files: list[Path], new_stem: str) -> list[RenameItem]:
+    """Keep each file in its original folder and preserve its extension."""
     preliminary: list[RenameItem] = []
     width = max(3, len(str(len(files))))
     for number, source in enumerate(files, start=1):
-        stem = source.stem.replace(find_text, replace_text) if find_text else source.stem
-        if numbering:
-            stem = f"{stem}_{number:0{width}d}"
-        new_name = f"{prefix}{stem}{suffix}{source.suffix}"
+        serial = f"_{number:0{width}d}" if len(files) > 1 else ""
+        new_name = f"{new_stem}{serial}{source.suffix}"
         preliminary.append(RenameItem(source, source.with_name(new_name), validate_filename(new_name)))
 
     targets: dict[Path, int] = {}
